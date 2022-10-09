@@ -1,0 +1,36 @@
+# zsh configuration
+
+ZDOTDIR=~/.zsh
+
+HISTFILE=~/.zsh/histfile
+HISTSIZE=1000
+SAVEHIST=1000
+
+bindkey -v
+#zstyle :compinstall filename $HOME'/sandboxed_homedirs/zsh_test/.zshrc'
+zstyle :compinstall filename $HOME'/.zshrc'
+
+autoload -Uz compinit vcs_info 
+compinit
+
+precmd() {
+    vcs_info
+    setopt prompt_subst
+    if [[ -z ${vcs_info_msg_0_} ]]; then
+        # Short prompt outside of a git repository.
+	    #PROMPT="%(?.%B%F{green} ❱.%B%F{red} ❱)%f%b "
+	    PROMPT="[%n][%m][%1~]%(?.%B%F{green} ❱.%B%F{red} ❱)%f%b "
+	    RPROMPT='%B%F{magenta}%2~%f%b'
+    else
+        # Longer prompt inside of a git repository.
+	    PROMPT="${vcs_info_msg_0_}%(?.%B%F{green}❱.%B%F{red}❱)%f%b "
+	    RPROMPT='%B%F{magenta}%2~%f%b'
+    fi
+}
+zstyle ':vcs_info:git:*' formats '%F{magenta}(%b)%f '
+zstyle ':vcs_info:*' enable git
+
+# Load configuration files
+for conf in "$HOME/.zshrc.d/modules/"*.zsh; do
+	source "${conf}"
+done

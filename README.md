@@ -1,1 +1,1 @@
-# dot_files
+# Configuration Repository

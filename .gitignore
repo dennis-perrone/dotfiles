@@ -1,0 +1,8 @@
+# gitignore
+
+# Ignore bash files
+**/.bash_history
+
+# Ignore zsh files
+**/zshrc.d/histfile
+**/zshrc.d/.zcompdump
