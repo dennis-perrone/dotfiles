@@ -6,3 +6,6 @@
 # Ignore zsh files
 **/zshrc.d/histfile
 **/zshrc.d/.zcompdump
+
+# Ignore (n)vim plugins
+**/nvim/plugged/

@@ -3,7 +3,15 @@
 #export PS1="\[${LIGHT_GREEN}\][\u]\[${NC}\] \[${LIGHT_GREEN}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${YELLOW}\]\$(task_count)\[${NC}\]\[${LIGHT_GREEN}\]\$(git_branch)\[${NC}\]$: "
 export PS1="\[${LIGHT_GREEN}\][\u]\[${NC}\] \[${LIGHT_GREEN}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${LIGHT_GREEN}\]\$(git_branch)\[${NC}\]$: "
 
+# Export editor variable
 export EDITOR=/usr/bin/nvim
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
 
 # Configure Python VirtualEnvWrapper
 export WORKON_HOME=$HOME/.virtualenvs
