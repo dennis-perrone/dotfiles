@@ -1,8 +1,5 @@
 # Export all environmental variables
 
-#export PS1="\[${LIGHT_GREEN}\][\u]\[${NC}\] \[${LIGHT_GREEN}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${YELLOW}\]\$(task_count)\[${NC}\]\[${LIGHT_GREEN}\]\$(git_branch)\[${NC}\]$: "
-export PS1="\[${LIGHT_GREEN}\][\u]\[${NC}\] \[${LIGHT_GREEN}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${LIGHT_GREEN}\]\$(git_branch)\[${NC}\]$: "
-
 # Export editor variable
 export EDITOR=/usr/bin/nvim
 

@@ -16,5 +16,8 @@ let mapleader = " "
 "endfor
 runtime! modules/*.vim
 
+" Source functions and plugins
+runtime! plugins/*.vim
+
 " Set colorscheme
 colorscheme gruvbox
