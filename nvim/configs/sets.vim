@@ -16,6 +16,7 @@ set noswapfile
 set nobackup
 set undodir=~/.config/nvim/undodir
 set undofile
+
 set incsearch
 set termguicolors
 set scrolloff=8
@@ -25,3 +26,11 @@ set completeopt=menuone,noinsert,noselect
 " Define column and vertical bar
 set colorcolumn=80
 set signcolumn=yes
+
+" Toggle paste mosde (to perserve source formatting)
+set pastetoggle=<F2>
+
+" Configure filetype actions
+filetype on
+filetype plugin on
+filetype indent on

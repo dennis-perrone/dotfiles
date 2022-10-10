@@ -14,7 +14,7 @@ let mapleader = " "
 "for f in split(glob('~/.config/nvim/modules/*.vim'), '\n')
 "	exe 'source' f
 "endfor
-runtime! modules/*.vim
+runtime! configs/*.vim
 
 " Source functions and plugins
 runtime! plugins/*.vim
