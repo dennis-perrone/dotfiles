@@ -4,8 +4,9 @@
 **/.bash_history
 
 # Ignore zsh files
-**/zshrc.d/histfile
+**/zshrc.d/.zsh_history
 **/zshrc.d/.zcompdump
 
 # Ignore (n)vim plugins
 **/nvim/plugged/
+**/nvim/undodir/

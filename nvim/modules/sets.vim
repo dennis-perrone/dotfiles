@@ -10,9 +10,11 @@ set nohlsearch
 set hidden
 set noerrorbells
 set nu
+
+" Configure swapfiles and backup directory
 set noswapfile
 set nobackup
-set undodir=~/.vimundodir
+set undodir=~/.config/nvim/undodir
 set undofile
 set incsearch
 set termguicolors

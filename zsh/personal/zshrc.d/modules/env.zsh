@@ -5,4 +5,12 @@ then
 fi
 export PATH
 
-export EDITOR=/usr/bin/nvim
+# editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# zsh
+export ZDOTDIR="$HOME/.zshrc.d"
+export HISTFILE="$ZDOTDIR/.zsh_history"
+export HISTSIZE=10000
+export SAVEHIST=10000
