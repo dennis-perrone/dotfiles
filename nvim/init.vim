@@ -5,6 +5,7 @@ Plug 'gruvbox-community/gruvbox'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'vimwiki/vimwiki'
+Plug 'airblade/vim-gitgutter'
 call plug#end()
 
 " Set leader

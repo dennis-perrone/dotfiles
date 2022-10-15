@@ -9,5 +9,5 @@ endfun
 
 augroup clean_whitespace
     autocmd!
-    autocmd BufWritePre * :call TrimWhitespace()
+    autocmd BufWritePre * silent! :call TrimWhitespace()
 augroup END
