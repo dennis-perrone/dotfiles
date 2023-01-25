@@ -1,0 +1,16 @@
+# zsh configuration
+
+export ZDOTDIR="$HOME/.zshrc.d"
+
+bindkey -v
+#zstyle :compinstall filename $HOME'/.zshrc'
+
+# Load configuration files
+for conf in "$HOME/.zshrc.d/configs/"*.zsh; do
+	source "${conf}"
+done
+
+# Load plugin files
+for plugin in "$HOME/.zshrc.d/plugins/"*.zsh; do
+	source "${plugin}"
+done

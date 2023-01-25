@@ -1,0 +1,124 @@
+" general settings
+set nocompatible                       " forces incompatibality with vi
+set history=500                        " defines how many lines of history
+set ruler                              " show line number, cursor position
+set ignorecase                         " search ignores case
+set hlsearch                           " highlight search results
+set wildmenu                           " visual autocomplete
+set incsearch                          " searches as characters entered
+set smartcase                          " attempts good decisions about case
+set showmatch                          " highlights matching brackets
+set number                             " show line numbers
+
+" vim-plug plugins
+call plug#begin()
+Plug 'scrooloose/nerdtree'             " loads NerdTree plugin
+Plug 'vimwiki/vimwiki'                 " loads VimWiki plugin
+Plug 'pearofducks/ansible-vim'         " loads Ansible-vim plugin
+"Plug 'valloric/youcompleteme'
+Plug 'sirver/ultisnips'               " loads Ultisnips to enable quick snippets
+Plug 'honza/vim-snippets'             " enables snippets
+Plug 'morhetz/gruvbox'
+call plug#end()
+
+" colors and fonts
+syntax enable                          " enabled syntax highlighting
+set background=dark                    " define dark background
+colorscheme gruvbox
+set encoding=utf8                      " sets UTF-8 encoding
+set list listchars=tab:\ \ ,trail:·    " visual tabs and trailing spaces
+
+" filetype settings
+filetype plugin on                     " enables filetype plugins
+filetype indent on                     " enables filetype plugins
+
+" directories and paths
+set directory=$HOME/.vim/swapfiles//   " sets swapfile directory
+set viminfo+=n~/.vim/viminfo           " sets viminfo location
+
+" text, indenting, tabs
+set expandtab                          " use spaces instead of tabs
+set smarttab                           " uses tabs smartly
+set shiftwidth=4                       " defines 1 tab as 4 spaces
+set tabstop=4                          " used in conjuction with shiftwidth
+set ai                                 " enables auto indent
+set si                                 " enables smart indent
+set wrap                               " enables line wrap
+set backspace=eol,start,indent         " corrects backspace
+set whichwrap+=<,>,h,l                 " corrects backspace
+" =================== Returns to last edit position ===========================
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+map <leader>tn :tabnew<cr>             " creates a new tab and moves to it
+map <leader>to :tabonly<cr>            " creates a new tab only
+map <leader>tc :tabclose<cr>           " closes a tab
+map <leader>tm :tabmove                " moves tabs
+map <leader>tb :tabprevious            " moves to previous tab
+map <leader>t<leader> :tabnext         " moves to next tab
+let g:lasttab = 1                      " toggles between current and last tab
+nmap <Leader>tl :exe "tabn ".g:lasttab<CR> " toggles between current and last
+au TabLeave * let g:lasttabe = tabpagenr() " togglees between current and last
+
+" key mapping - general
+let mapleader = ","                    " makes leader key a modifier
+
+" key mapping - normal mode
+" nmap defines key bindings in normal mode
+nmap <c-n> :NERDTreeToggle<CR>         " toggles NerdTree
+nmap <c-u> mzg~iw'z                    " toggles the case of a word
+nmap <leader>w :w!                     " enabled fast saving
+
+" key mapping - visual mode
+" vmap defines key bindings in visual mode
+" =============================================================================
+"
+
+" key mapping - insert mode
+" imap defines key bindings in insert mode
+imap <c-u> <esc>mzg~iw'zi              " toggles the case of a word
+imap <c-d> <esc>ddi                    " deletes line and returns to insert
+
+" Vim-Wiki Mappings
+"let g:vimwiki_list = [{'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md'}]
+let wiki_1 = {}
+let wiki_1.path = '~/vimwiki/personal-md/'
+let wiki_1.syntax = 'markdown'
+let wiki_1.ext = '.md'
+" ==========================================
+let wiki_2 = {}
+let wiki_2.path = '~/vimwiki/work-md/'
+let wiki_2.syntax = 'markdown'
+let wiki_2.ext = '.md'
+" ==========================================
+let g:vimwiki_list = [wiki_1, wiki_2]
+let g:vimwiki_ext2syntax = {'.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
+
+" ultisnips configurations
+let g:UltiSnipsExpandTrigger = '<tab>'
+let g:UltiSnipsJumpForwardTrigger = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger = '<s-tab>'
+let g:UltiSnipsSnippetDirectories=["snips"]
+
+" vim ansible configurations
+"au BufRead,BufNewFile */playbooks/*.yml set filetype=yaml.ansible
+autocmd FileType yaml setlocal et ts=2 ai sw=2 nu sts=0
+autocmd FileType yml setlocal et ts=2 ai sw=2 nu sts=0
+
+" Ensure that VIM doesn't start in replace mode
+set t_u7=
+
+" Toggle paste mode (to perserve source formatting)
+set pastetoggle=<F2>
+
+
+hi SpellBad cterm=underline
+
+fun! TrimWhitespace()
+    let l:save = winsaveview()
+    keeppatterns %s/\s\+$//e
+    call winrestview(l:save)
+endfun
+
+augroup clean_whitespace
+    autocmd!
+    autocmd BufWritePre * :call TrimWhitespace()
+augroup END
