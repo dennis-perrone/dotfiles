@@ -2,7 +2,15 @@
 
 # Export editor variable
 #export EDITOR=/usr/bin/nvim
-export EDITOR=/usr/bin/vim
+#export EDITOR=/usr/bin/vim
+if [[ -f "/usr/bin/nvim" ]]; then
+	export EDITOR=/usr/bin/nvim
+elif [[ -f "/usr/bin/vim" ]]; then
+	export EDITOR=/usr/bin/vim
+else
+	export EDITOR=/usr/bin/nano
+fi
+
 
 # Configure Python VirtualEnvWrapper
 export WORKON_HOME=$HOME/.virtualenvs
