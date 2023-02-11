@@ -4,7 +4,12 @@
 #export PS1="\[${LIGHT_GREEN}\][\u]\[${NC}\] \[${LIGHT_GREEN}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${YELLOW}\]\$(task_count)\[${NC}\]\[${LIGHT_GREEN}\]\$(git_branch)\[${NC}\]$: "
 
 # prompt with git and no taskwarrior
-export PS1="\[${LIGHT_GREEN}\][\u]\[${NC}\] \[${LIGHT_GREEN}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${LIGHT_GREEN}\]\$(git_branch)\[${NC}\]$: "
+if [[ "$EUID" -ne 0 ]]; then
+	export PS1="\[${LIGHT_GREEN}\][\u]\[${NC}\] \[${LIGHT_GREEN}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${LIGHT_GREEN}\]\$(git_branch)\[${NC}\]$: "
+else
+	export PS1="\[${LIGHT_RED}\][\u]\[${NC}\] \[${LIGHT_RED}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${LIGHT_GREEN}\]\$(git_branch)\[${NC}\]$: "
+fi
+
 #export PS1="\[${LIGHT_GREEN}\][\u]\[${NC}\] \[${LIGHT_GREEN}\][\h]\[${NC}\] \[${LIGHT_BLUE}\][\W] \[${LIGHT_GREEN}\]\$(parse_git_branch)\[${NC}\]$: "
 
 # prompt with git and no taskwarrior

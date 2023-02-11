@@ -12,7 +12,7 @@
 **/nvim/undodir/
 
 # Ignore vim files
-/vim/plugged/
-/vim/viminfo
-/vim/swapfiles/**
+**/vim/plugged/
+**/vim/viminfo
+**/vim/swapfiles/**
 
