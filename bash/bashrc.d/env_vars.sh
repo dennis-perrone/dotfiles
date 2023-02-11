@@ -4,11 +4,17 @@
 #export EDITOR=/usr/bin/nvim
 #export EDITOR=/usr/bin/vim
 if [[ -f "/usr/bin/nvim" ]]; then
-	export EDITOR=/usr/bin/nvim
+    export EDITOR=/usr/bin/nvim
+    alias vim='nvim'
+    alias vi='nvim'
 elif [[ -f "/usr/bin/vim" ]]; then
-	export EDITOR=/usr/bin/vim
+    export EDITOR=/usr/bin/vim
+    alias vi='vim'
 else
-	export EDITOR=/usr/bin/nano
+    export EDITOR=/usr/bin/nano
+    alias nvim='nano'
+    alias vim='nano'
+    alias vi='nano'
 fi
 
 

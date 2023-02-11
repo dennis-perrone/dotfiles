@@ -1,7 +1,7 @@
 # User specific aliases and functions
-#alias vi='nvim'
-#alias vim='nvim'
-alias vi='vim'
+
+# Editor aliases are set in env_vars.sh file.
+
 alias ls='ls --color=auto'
 alias ll='ls -alh --color=auto'
 alias lh='ls -lh --color=auto'
