@@ -4,22 +4,19 @@ Plug 'scrooloose/nerdtree'
 Plug 'gruvbox-community/gruvbox'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'vimwiki/vimwiki'
 Plug 'airblade/vim-gitgutter'
+Plug 'vimwiki/vimwiki'
+" Plug 'lervag/wiki.vim'
+" Plug 'godlygeek/tabular'
+"Plug 'preservim/vim-markdown'
 call plug#end()
 
-" Set leader
+" Set leader key
 let mapleader = " "
 
-" Source modules
-"for f in split(glob('~/.config/nvim/modules/*.vim'), '\n')
-"	exe 'source' f
-"endfor
-"
+" Source configurations
 runtime! configs/*.vim
 
-" Source functions and plugins
-runtime! functions/*.vim
-
-" Set colorscheme
+" Set color scheme
 colorscheme gruvbox
+

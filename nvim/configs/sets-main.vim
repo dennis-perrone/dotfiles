@@ -12,7 +12,7 @@ set hidden
 set noerrorbells
 set nu
 
-" Configure swapfiles and backup directory
+" Configure swap files and backup directory
 set noswapfile
 set nobackup
 set undodir=~/.config/nvim/undodir
@@ -28,10 +28,13 @@ set completeopt=menuone,noinsert,noselect
 set colorcolumn=80
 set signcolumn=yes
 
-" Toggle paste mosde (to perserve source formatting)
+" Toggle paste mode (to preserve source formatting)
 set pastetoggle=<F2>
 
-" Configure filetype actions
+" Configure file type actions
 filetype on
 filetype plugin on
 filetype indent on
+
+" Enable spell check
+set spell spelllang=en_us
