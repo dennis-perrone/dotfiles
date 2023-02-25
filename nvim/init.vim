@@ -8,7 +8,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'vimwiki/vimwiki'
 " Plug 'lervag/wiki.vim'
 " Plug 'godlygeek/tabular'
-"Plug 'preservim/vim-markdown'
+" Plug 'preservim/vim-markdown'
 call plug#end()
 
 " Set leader key
