@@ -1,22 +1,18 @@
 # Export all environmental variables
 
 # Export editor variable
-#export EDITOR=/usr/bin/nvim
-#export EDITOR=/usr/bin/vim
 if [[ -f "/usr/bin/nvim" ]]; then
-    export EDITOR=/usr/bin/nvim
-    alias vim='nvim'
-    alias vi='nvim'
+	export EDITOR=/usr/bin/nvim
+	alias vi='nvim'
+	alias vim='nvim'
 elif [[ -f "/usr/bin/vim" ]]; then
-    export EDITOR=/usr/bin/vim
-    alias vi='vim'
+	export EDITOR=/usr/bin/vim
+	alias vi='vim'
 else
-    export EDITOR=/usr/bin/nano
-    alias nvim='nano'
-    alias vim='nano'
-    alias vi='nano'
+	export EDITOR=/usr/bin/nano
+	alias vi='nano'
+	alias vim='nano'
 fi
-
 
 # Configure Python VirtualEnvWrapper
 export WORKON_HOME=$HOME/.virtualenvs

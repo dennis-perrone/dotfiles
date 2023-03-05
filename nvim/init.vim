@@ -2,6 +2,7 @@
 call plug#begin('~/.config/nvim/plugged')
 Plug 'scrooloose/nerdtree'
 Plug 'gruvbox-community/gruvbox'
+" Plug 'AlexvZyl/nordic.nvim', { 'branch': 'main' }
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'airblade/vim-gitgutter'
@@ -19,4 +20,3 @@ runtime! configs/*.vim
 
 " Set color scheme
 colorscheme gruvbox
-
