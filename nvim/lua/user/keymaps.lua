@@ -41,7 +41,7 @@ keymap("n", "<S-h>", ":bprevious<CR>", opts)
 
 -- General remaps
 keymap("n", "<leader>w", ":w<cr>", opts)
-keymap("n", "<leader>fs", "fs z=", opts)
+keymap("n", "<leader>fs", "z=", opts)
 keymap("n", "<leader>s", ":set spell!<cr>", opts)
 
 -- Telescope
