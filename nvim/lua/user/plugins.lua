@@ -28,16 +28,10 @@ return require('packer').startup(function(use)
 
   use 'nvim-tree/nvim-tree.lua'                            -- Nvim Tree
 
---  use {                                                    -- Telescope and Plenary
---    'nvim-telescope/telescope.nvim', tag = '0.1.0',
---   requires = { {'nvim-lua/plenary.nvim'} }
---  }
-
---  use {                                                    -- Statusline and Icons
---    'nvim-lualine/lualine.nvim',
---    requires = { 'kyazdani42/nvim-web-devicons', opt = true }
---  }
-  
+  use ({
+    "iamcco/markdown-preview.nvim",
+    run = function() vim.fn["mkdp#util#install"]() end,
+  })
 
   -- Keep this at the end. Required for Packer to bootstrap properly.
   if packer_bootstrap then

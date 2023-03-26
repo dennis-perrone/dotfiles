@@ -59,3 +59,5 @@ keymap('n', '<leader>fw', "<cmd>lua require('telescope.builtin').live_grep({sear
 keymap('n', '<leader>n', ":NvimTreeToggle<cr>", opts)
 keymap('n', '<leader>nf', ":NvimTreeFind<cr>", opts)
 
+-- Markdown Preview
+keymap('n', '<C-p>', ":MarkdownPreviewToggle<cr>", opts)
