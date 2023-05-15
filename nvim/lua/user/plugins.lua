@@ -23,9 +23,7 @@ return require('packer').startup(function(use)
   use 'nvim-lualine/lualine.nvim'                          -- Status line within nvim
   use 'vimwiki/vimwiki'                                    -- Vimwiki
   use 'airblade/vim-gitgutter'                             -- Git Gutter
-
   use 'gruvbox-community/gruvbox'                          -- Gruvbox colorscheme
-
   use 'nvim-tree/nvim-tree.lua'                            -- Nvim Tree
 
   use ({

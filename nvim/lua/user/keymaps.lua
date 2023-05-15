@@ -60,4 +60,4 @@ keymap('n', '<leader>n', ":NvimTreeToggle<cr>", opts)
 keymap('n', '<leader>nf', ":NvimTreeFind<cr>", opts)
 
 -- Markdown Preview
-keymap('n', '<C-p>', ":MarkdownPreviewToggle<cr>", opts)
+keymap('n', '<leader>mp', ":MarkdownPreviewToggle<cr>", opts)

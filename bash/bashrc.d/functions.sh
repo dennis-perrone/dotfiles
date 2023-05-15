@@ -7,3 +7,9 @@ git_branch() {
         echo ""
     fi
 }
+
+pandoc() {
+  echo pandoc $@
+  podman run -it --rm -v $PWD:/work:Z -w /work pandoc/latex "$@"
+
+}
