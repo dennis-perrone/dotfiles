@@ -8,9 +8,9 @@ fi
 export PATH
 
 # Start tmux session when starting
-if command -v tmux &> /dev/null [ -z "$TMUX" ]; then
-  tmux new -A -s default
-fi
+#if command -v tmux &> /dev/null [ -z "$TMUX" ]; then
+#  tmux new -A -s default
+#fi
 
 # User specific aliases and functions
 if [ -d ~/.bashrc.d ]; then
