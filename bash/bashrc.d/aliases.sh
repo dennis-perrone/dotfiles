@@ -1,7 +1,5 @@
 # User specific aliases and functions
-#alias vi='nvim'
-#alias vim='nvim'
-#alias vi='vim'
+alias sudo='sudo '
 alias ls='ls --color=auto'
 alias ll='ls -alh --color=auto'
 alias lh='ls -lh --color=auto'
@@ -23,7 +21,7 @@ alias ytdl-music='youtube-dl --output "%(title)s.%(ext)s" -x --audio-format mp3 
 alias vimwiki-personal='vim $HOME/vimwiki/personal-md/index.md'
 alias vimwiki-work='vim $HOME/vimwiki/work-md/index.md'
 alias wiki='nvim $HOME/wiki/index.md'
-alias nnm='$HOME/bin/new_mtg.sh'
+alias nnm='$HOME/bin/new_mtg'
 
 # git aliases
 alias ga='git add .'
