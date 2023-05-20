@@ -36,13 +36,17 @@ keymap("n", "<C-Left>", ":vertical resize -2<CR>", opts)
 keymap("n", "<C-Right>", ":vertical resize +2<CR>", opts)
 
 -- Navigate buffers
-keymap("n", "<S-l>", ":bnext<CR>", opts)
-keymap("n", "<S-h>", ":bprevious<CR>", opts)
+keymap("n", "<S-Right>", ":bnext<CR>", opts)
+keymap("n", "<S-Left>", ":bprevious<CR>", opts)
 
 -- General remaps
 keymap("n", "<leader>w", ":w<cr>", opts)
 keymap("n", "<leader>fs", "z=", opts)
 keymap("n", "<leader>s", ":set spell!<cr>", opts)
+keymap("n", "<leader>y", "*y", opts)
+keymap("n", "<leader>p", "*p", opts)
+keymap("n", "<leader>Y", "+y", opts)
+keymap("n", "<leader>P", "+p", opts)
 
 -- Telescope
 keymap('n', '<leader>ff', "<cmd>lua require('telescope.builtin').find_files()<cr>", opts)
@@ -50,6 +54,9 @@ keymap('n', '<leader>fg', "<cmd>lua require('telescope.builtin').live_grep()<cr>
 keymap('n', '<leader>fb', "<cmd>lua require('telescope.builtin').buffers()<cr>", opts)
 keymap('n', '<leader>fh', "<cmd>lua require('telescope.builtin').help_tags()<cr>", opts)
 keymap('n', '<leader>fw', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki'}})<cr>", opts)
+
+-- Vimwiki
+keymap('n', '<leader>tc', ":VimwikiTOC<cr>", opts)
 
 -- NerdTree
 --keymap('n', '<leader>n', ":NERDTreeToggle<cr>", opts)
@@ -61,3 +68,6 @@ keymap('n', '<leader>nf', ":NvimTreeFind<cr>", opts)
 
 -- Markdown Preview
 keymap('n', '<leader>mp', ":MarkdownPreviewToggle<cr>", opts)
+
+-- Clipboard Paste Image
+keymap('n', '<leader>pi', ":PasteImg<cr>", opts)

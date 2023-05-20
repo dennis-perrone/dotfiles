@@ -8,3 +8,5 @@ require('user.lualine')                                   -- Lualine configurati
 require('user.nvimtree')                                  -- Nvim Tree configuration
 require('user.vimwiki')                                   -- Vimwiki configuration
 require('user.markdown-preview')                          -- Markdown Preview configuration
+require('user.bufferline')
+require('user.clipboard-image')
