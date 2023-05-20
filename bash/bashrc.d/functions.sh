@@ -27,10 +27,13 @@ function set_PS1() {
   if [[ -a ".git" ]] && [[ -f "/run/.containerenv" ]]; then
     export PS1="\[${LIGHT_GREEN}\]\$(show_container)\[${NC}\] \[${LIGHT_BLUE}\]\$(git_branch)\[${NC}\] \[${LIGHT_GREEN}\]❱\[${NC}\] "
   elif [[ -a ".git" ]]; then
-    export PS1="\[${LIGHT_BLUE}\]\$(git_branch)\[${NC}\] \[${LIGHT_GREEN}\]❱\[${NC}\] "
+    export PS1="\[${LIGHT_GREEN}\][\W]\[${NC}\] \[${LIGHT_BLUE}\]\$(git_branch)\[${NC}\] \[${LIGHT_GREEN}\]❱\[${NC}\] "
+    #export PS1="\[${LIGHT_BLUE}\]\$(git_branch)\[${NC}\] \[${LIGHT_GREEN}\]❱\[${NC}\] "
   elif [[ -f "/run/.containerenv" ]]; then
     export PS1="\[${LIGHT_GREEN}\]\$(show_container)\[${NC}\] \[${LIGHT_GREEN}\]❱\[${NC}\] "
-  else
+  elif [[ "$(id -u)" == "0" ]]; then
     export PS1="\[${LIGHT_RED}\][\u] [\h] ❱\[${NC}\] "
+  else
+    export PS1="\[${LIGHT_GREEN}\][\W] ❱\[${NC}\] "
   fi
 }
