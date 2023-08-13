@@ -7,3 +7,9 @@ vim.wiki_1 = {}
 vim.wiki_1.path = '~/wiki/'
 vim.wiki_1.syntax = 'markdown'
 vim.wiki_1.ext = '.md'
+
+-- Configure folding
+vim.g.vimwiki_fold_blank_lines = 0
+vim.g.vimwiki_header_type = '#'
+vim.g.vimwiki_folding = 'expr'
+vim.opt.foldlevel = 3

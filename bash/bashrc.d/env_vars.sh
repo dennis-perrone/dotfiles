@@ -18,6 +18,7 @@ fi
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/development/scripts/python
 export VIRTUALENVWRAPPER_SCRIPT=/usr/bin/virtualenvwrapper.sh
+source /usr/bin/virtualenvwrapper.sh
 
 # Ruby Specific variables for Jekyll
 #export GEM_HOME="$HOME/gems"
