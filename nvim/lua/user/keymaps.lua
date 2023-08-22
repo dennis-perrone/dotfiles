@@ -54,9 +54,11 @@ keymap('n', '<leader>fg', "<cmd>lua require('telescope.builtin').live_grep()<cr>
 keymap('n', '<leader>fb', "<cmd>lua require('telescope.builtin').buffers()<cr>", opts)
 keymap('n', '<leader>fh', "<cmd>lua require('telescope.builtin').help_tags()<cr>", opts)
 keymap('n', '<leader>fw', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki'}})<cr>", opts)
-keymap('n', '<leader>fn', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki/notes'}})<cr>", opts)
-keymap('n', '<leader>fm', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki/meeting-notes'}})<cr>", opts)
--- keymap('n', '<leader>fw', "<cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<cr>", opts)
+keymap('n', '<leader>fn', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki/public'}})<cr>", opts)
+keymap('n', '<leader>fm', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki/private'}})<cr>", opts)
+--keymap('n', '<leader>fw', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki'}})<cr>", opts)
+--keymap('n', '<leader>fn', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki/notes'}})<cr>", opts)
+--keymap('n', '<leader>fm', "<cmd>lua require('telescope.builtin').live_grep({search_dirs = {'~/wiki/meeting-notes'}})<cr>", opts)
 
 -- Vimwiki
 keymap('n', '<leader>tc', ":VimwikiTOC<cr>", opts)
@@ -74,3 +76,7 @@ keymap('n', '<leader>mp', ":MarkdownPreviewToggle<cr>", opts)
 
 -- Clipboard Paste Image
 keymap('n', '<leader>pi', ":PasteImg<cr>", opts)
+
+-- Calling Functions
+keymap('n', '<leader>wa', ":call VimwikiFindAllIncompleteTasks()<cr>", opts)
+keymap('n', '<leader>wx', ":call VimwikiFindIncompleteTasks()<cr>", opts)

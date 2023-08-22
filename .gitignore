@@ -10,6 +10,7 @@
 # Ignore (n)vim plugins
 **/nvim/plugged/
 **/nvim/undodir/
+**/nvim/plugin/
 
 # Ignore vim files
 **/vim/plugged/

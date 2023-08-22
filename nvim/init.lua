@@ -10,3 +10,4 @@ require('user.vimwiki')                                   -- Vimwiki configurati
 require('user.markdown-preview')                          -- Markdown Preview configuration
 require('user.bufferline')
 require('user.clipboard-image')
+require('user.functions')

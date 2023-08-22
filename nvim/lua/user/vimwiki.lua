@@ -1,12 +1,31 @@
--- VimWiki Configuration
+-- Vimwiki Configuration
 
-vim.g.vimwiki_list = {{path = '~/wiki/', syntax = 'markdown', ext = '.md'}}    -- Define vimwiki list
-vim.g.vimwiki_markdown_link_ext = 1                                            -- Ensure all new links have .md extension
+-- Define vimwiki list
+vim.g.vimwiki_list = {
+  {
+    path = '~/wiki/public',
+    syntax = 'markdown',
+    ext = '.md',
+  },
+  {
+    path = '~/wiki/private',
+    syntax= 'markdown',
+    ext = '.md',
+  }
+}
+
+-- Ensure all new links have .md extension
+vim.g.vimwiki_markdown_link_ext = 1
 
 vim.wiki_1 = {}
-vim.wiki_1.path = '~/wiki/'
+vim.wiki_1.path = '~/wiki/public'
 vim.wiki_1.syntax = 'markdown'
 vim.wiki_1.ext = '.md'
+
+vim.wiki_2 = {}
+vim.wiki_2.path = '~/wiki/private'
+vim.wiki_2.syntax = 'markdown'
+vim.wiki_2.ext = '.md'
 
 -- Configure folding
 vim.g.vimwiki_fold_blank_lines = 0
