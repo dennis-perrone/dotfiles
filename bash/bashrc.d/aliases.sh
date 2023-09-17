@@ -21,6 +21,7 @@ alias ytdl-music='youtube-dl --output "%(title)s.%(ext)s" -x --audio-format mp3 
 alias vimwiki-personal='vim $HOME/vimwiki/personal-md/index.md'
 alias vimwiki-work='vim $HOME/vimwiki/work-md/index.md'
 alias wiki='nvim $HOME/wiki/public/index.md'
+alias wiki-private='nvim $HOME/wiki/private/index.md'
 alias nnm='$HOME/bin/new_mtg'
 
 # git aliases
