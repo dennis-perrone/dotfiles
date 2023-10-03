@@ -37,3 +37,8 @@ alias zathura-bmarks-view='more ~/.local/share/zathura/bookmarks'
 
 # minikube
 alias kubectl="minikube kubectl --"
+
+# markdown lint
+# MD013: Ignore line length
+# MD033: Ignore inline html
+alias mdl="podman run --rm -v $PWD:/workdir:Z ghcr.io/igorshubovych/markdownlint-cli:latest --disable MD013 MD033 -- '**/*.md'"
