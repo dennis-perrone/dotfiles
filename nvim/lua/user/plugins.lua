@@ -29,6 +29,7 @@ return require('packer').startup(function(use)
   })
   use 'akinsho/bufferline.nvim'
   use 'ekickx/clipboard-image.nvim'
+  --use 'img-paste-devs/img-paste.vim'
 
   -- Keep this at the end. Required for Packer to bootstrap properly.
   if packer_bootstrap then
