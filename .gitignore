@@ -3,6 +3,14 @@
 # Ignore bash files
 **/.bash_history
 
+# Ignore emacs files
+**/auto-save-list/
+**/bookmarks
+**/.cache/
+**/eln-cache/
+**/elpa/
+**/elpaca/
+
 # Ignore zsh files
 **/zshrc.d/.zsh_history
 **/zshrc.d/.zcompdump
