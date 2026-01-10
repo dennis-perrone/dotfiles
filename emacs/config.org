@@ -1,0 +1,902 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: Dennis Perrone
+#+OPTIONS: toc:2
+
+* Table of Contents :toc:
+- [[#startup-performance][Startup Performance]]
+- [[#package-system-setup][Package System Setup]]
+  - [[#automatic-package-updates][Automatic Package Updates]]
+- [[#ivy-and-counsel][Ivy and Counsel]]
+- [[#keep-folders-clean][Keep Folders Clean]]
+- [[#basic-ui-configuration][Basic UI Configuration]]
+- [[#keybinding-configuration][Keybinding Configuration]]
+- [[#ui-configuration][UI Configuration]]
+  - [[#color-theme][Color Theme]]
+  - [[#zoom-in-and-out][Zoom in and Out]]
+  - [[#source-code-block-tag-expansion][Source Code Block Tag Expansion]]
+  - [[#which-key][Which Key]]
+  - [[#ivy-and-counsel-1][Ivy and Counsel]]
+- [[#org-mode][Org Mode]]
+  - [[#nicer-heading-bullets][Nicer Heading Bullets]]
+  - [[#table-of-contents][Table of Contents]]
+  - [[#configure-babel-languages][Configure Babel Languages]]
+  - [[#structure-templates][Structure Templates]]
+- [[#development][Development]]
+  - [[#languages][Languages]]
+  - [[#rainbow-delimiters][Rainbow Delimiters]]
+- [[#file-management][File Management]]
+  - [[#dired][Dired]]
+  - [[#sudo-edit][Sudo Edit]]
+- [[#spell-check][Spell Check]]
+
+* Startup Performance
+
+#+begin_src emacs-lisp
+
+  ;; The default is 800 kilobytes.  Measured in bytes.
+  (setq gc-cons-threshold (* 50 1000 1000))
+
+  (defun efs/display-startup-time ()
+    (message "Emacs loaded in %s with %d garbage collections."
+             (format "%.2f seconds"
+                     (float-time
+                       (time-subtract after-init-time before-init-time)))
+             gcs-done))
+
+  (add-hook 'emacs-startup-hook #'efs/display-startup-time)
+
+#+end_src
+
+* Package System Setup
+
+Emacs has a built in package manager but it doesn't make it easy to automatically install packages on a new system the first time you pull down your configuration.  [[https://github.com/jwiegley/use-package][use-package]] is a really helpful package used in this configuration to make it a lot easier to automate the installation and configuration of everything else we use.
+
+#+begin_src emacs-lisp
+
+  ;; Initialize package sources
+  (require 'package)
+
+  (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                           ("melpa" . "https://melpa.org/packages/")))
+
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+    ;; Initialize use-package on non-Linux platforms
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+
+  ;; Delete builtin org mode
+  (defun dp/ignore-builtin (pkg)
+    (assq-delete-all pkg package--builtins)
+    (assq-delete-all pkg package--builtin-versions))
+
+  (dp/ignore-builtin 'org)
+
+#+end_src
+
+** Automatic Package Updates
+
+The auto-package-update package helps us keep our Emacs packages up to date!  It will prompt you after a certain number of days either at startup or at a specif
+ic time of day to remind you to update your packages.
+
+You can also use =M-x auto-package-update-now= to update right now!
+
+#+begin_src emacs-lisp
+
+  (use-package auto-package-update
+    :custom
+    (auto-package-update-interval 7)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe)
+    (auto-package-update-at-time "09:00"))
+
+#+end_src
+
+* Ivy and Counsel
+
+[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet powerful selection menu that appears when you open files, switch buffers, and for many other tasks in Emacs.  Counsel is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which provide useful commands for each of the default completion commands.
+
+[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each item.
+
+#+begin_src emacs-lisp
+
+(use-package ivy
+  :diminish
+  :bind (("C-s" . swiper)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
+
+(use-package ivy-rich
+  :after ivy
+  :init
+  (ivy-rich-mode 1))
+
+(use-package counsel
+  :bind (("C-M-j" . 'counsel-switch-buffer)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history))
+  :custom
+  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+  :config
+  (counsel-mode 1))
+
+#+end_src
+
+
+* Keep Folders Clean
+
+We use the [[https://github.com/emacscollective/no-littering/blob/master/no-littering.el][no-littering]] package to keep folders where we edit files and the Emacs configuration folder clean!  It knows about a wide variety of variables for built in Emacs features as well as those from community packages so it can be much easier than finding and setting these variables yourself.
+
+#+begin_src emacs-lisp
+
+  (setq user-emacs-directory "~/.config/emacs")
+
+  (use-package no-littering)
+
+  ;; no-littering doesn't set this by default so we must place
+  ;; auto save files in the same path as it uses for sessions
+  (setq auto-save-file-name-transforms
+        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))) 
+
+  ;; Set it so that all backups (filename~) go into this directory.
+  (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
+
+  (make-directory (expand-file-name "tmp/auto-saves/" user-emacs-directory) t)
+
+  (setq auto-save-list-file-prefix (expand-file-name "tmp/auto-saves/sessions/" user-emacs-directory)
+        auto-save-file-name-transforms `((".*" ,(expand-file-name "tmp/auto-saves/" user-emacs-directory) t)))
+
+#+end_src
+
+* Basic UI Configuration
+
+This section configures basic UI settings that remove unneeded elements to make Emacs look a lot more minimal and modern.  If you're just getting started in Ema
+cs, the menu bar might be helpful so you can remove the =(menu-bar-mode -1)= line if you'd like to still see that.
+
+#+begin_src emacs-lisp
+
+  (setq inhibit-startup-message t)
+
+  (scroll-bar-mode -1)         ; Disable visible scrollbar
+  (tool-bar-mode -1)           ; Disable the toolbar
+  (tooltip-mode -1)            ; Disable tooltips
+  (set-fringe-mode 10)         ; Give some breathing room
+
+  (menu-bar-mode -1)           ; Disable the menu bar
+  (electric-indent-mode -1)    ; Turn off the weird indenting that Emacs does by default.
+  (electric-pair-mode 1)       ; Turns on automatic parens pairing
+  ;; Set up the visible bell
+  ;;(setq visible-bell t)
+
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+                  term-mode-hook
+                  shell-mode-hook
+                  treemacs-mode-hook
+                  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+#+end_src
+
+* Keybinding Configuration
+
+This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience.  [[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key.  [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
+
+#+begin_src emacs-lisp
+
+  ;; Make ESC quit prompts
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+  (use-package general
+    :after evil
+    :config
+    (general-create-definer dp/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
+
+    (dp/leader-keys
+      "SPC" '(counsel-M-x :wk "Counsel M-x")
+      "." '(find-file :wk "Find file")
+      "=" '(perspective-map :wk "Perspective") ;; Lists all the perspective keybindings
+      "TAB TAB" '(comment-line :wk "Comment lines"))
+
+    (dp/leader-keys
+      "b" '(:ignore t :wk "bookmarks and buffers")
+      "b b" '(switch-to-buffer :wk "Switch to buffer")
+      "b k" '(kill-current-buffer :wk "Kill current buffer")
+      "b m" '(buffer-menu :wk "Buffer menu")
+      "b s" '(basic-save-buffer :wk "Save buffer"))
+
+    (dp/leader-keys
+      "f" '(:ignore t :wk "files")
+  	    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Open emacs config.org")
+      "f e" '((lambda () (interactive) (dired "~/.config/emacs/")) :wk "Open user-emacs-directory in dired")
+      "f s" '(flyspell-correct-word-before-point :wk "Fix Spelling")'
+  	    "f u" '(sudo-edit-find-file :wk "Sudo find file")
+      "f U" '(sudo-edit :wk "Sudo edit file"))
+
+    (dp/leader-keys
+      "e" '(:ignore t :wk "evaluate")
+      "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+      "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+      "e e" '(eval-expression :wk "Evaluate and elisp expression")
+      "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+      "e r" '(eval-region :wk "Evaluate elisp in region"))
+
+    (dp/leader-keys
+      "h" '(:ignore t :wk "help")
+      "h a" '(counsel-apropos :wk "Apropos")
+      "h b" '(describe-bindings :wk "Describe bindings")
+      "h c" '(describe-char :wk "Describe character under cursor")
+      "h f" '(describe-function :wk "Describe function")
+      "h i" '(info :wk "Info")
+      "h m" '(describe-mode :wk "Describe mode")
+      "h r" '(:ignore t :wk "Reload")
+      "h r r" '(lambda () (interactive)
+              (load-file "~/.config/emacs/init.el")
+              :wk "Reload emacs config")
+      "h t" '(load-theme :wk "Load theme")
+      "h v" '(describe-variable :wk "Describe variable")
+      "h w" '(where-is :wk "Prints keybinding for command if set")
+      "h x" '(describe-command :wk "Display full documentation for command"))
+
+    (dp/leader-keys
+      "m" '(:ignore t :wk "org mode")
+      "m a" '(org-agenda :wk "agenda")
+      "m B" '(org-babel-tangle :wk "Babel tangle")
+      "m c" '(org-capture :wk "Capture")
+      "m i" '(org-toggle-item :wk "Toggle item")
+      "m l" '(org-todo-list :wk "Todo list")
+      "m m" '((lambda () (interactive)
+              (find-file "~/Documents/org/meetings.org"))
+              :wk "Open meeting notes")
+      "m p" '(org-set-property :wk "Set Properties")
+      "m r" '(org-refile :wk "Refile item")
+      "m R" '(org-reload :wk "Reload org more")
+      "m t" '(org-todo :wk "Set TODO Status")
+      "m T" '(org-set-tags-command :wk "Set Tags"))
+
+    (dp/leader-keys
+      "m d" '(:ignore t :wk "Clock In and Out")
+      "m d i" '(org-clock-in :wk "Clock In")
+      "m d o" '(org-clock-out :wk "Clock Out"))
+    
+    (dp/leader-keys
+      "m s" '(:ignore t :wk "Date and Time")
+      "m s d" '(org-deadline :wk "Set Deadline")
+      "m s s" '(org-schedule :wk "Set Schedule")
+      "m s t" '(org-time-stamp :wk "Add Timestamp"))
+
+    (dp/leader-keys
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme"))
+
+    (dp/leader-keys
+      "w" '(:ignore t :wk "windows")
+  	    ;; Window splits
+  	    "w c" '(evil-window-delete :wk "Close window")
+  	    "w n" '(evil-window-new :wk "New window")
+  	    "w s" '(evil-window-split :wk "Horizontal split window")
+  	    "w v" '(evil-window-vsplit :wk "Vertical split window")
+  	    ;; Window motions
+  	    "w h" '(evil-window-left :wk "Window left")
+  	    "w j" '(evil-window-down :wk "Window down")
+  	    "w k" '(evil-window-up :wk "Window up")
+  	    "w l" '(evil-window-right :wk "Window right")
+  	    "w w" '(evil-window-next :wk "Goto next window")
+  	    ;; Move Windows
+  	    "w H" '(buf-move-left :wk "Buffer move left")
+  	    "w J" '(buf-move-down :wk "Buffer move down")
+  	    "w K" '(buf-move-up :wk "Buffer move up")
+  	    "w L" '(buf-move-right :wk "Buffer move right")))
+
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+    ;; Use visual line motions even outside of visual-line-mode buffers
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
+
+#+end_src
+
+* UI Configuration
+** Color Theme
+
+[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many different Emacs modes.  Taking a look at the [[https://github.com/hlissner/emacs-doom-themes/tree/screenshots][screenshots]] might help you decide which one you like best.  You can also run =M-x counsel-load-theme= to choose between them easily.
+
+#+begin_src emacs-lisp
+
+(use-package doom-themes
+  :init (load-theme 'doom-palenight t))
+
+#+end_src
+
+** Zoom in and Out
+
+#+begin_src emacs-lisp
+
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+(global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+
+#+end_src
+
+** Source Code Block Tag Expansion
+Org-tempo is not a separate package but a module within org that can be enabled.  Org-tempo allows for '<s' followed by TAB to expand to a begin_src tag.  Other expansions available include:
+
+| Typing the below + TAB | Expands to ...                          |
+|------------------------+-----------------------------------------|
+| <a                     | '#+BEGIN_EXPORT ascii' … '#+END_EXPORT  |
+| <c                     | '#+BEGIN_CENTER' … '#+END_CENTER'       |
+| <C                     | '#+BEGIN_COMMENT' … '#+END_COMMENT'     |
+| <e                     | '#+BEGIN_EXAMPLE' … '#+END_EXAMPLE'     |
+| <E                     | '#+BEGIN_EXPORT' … '#+END_EXPORT'       |
+| <h                     | '#+BEGIN_EXPORT html' … '#+END_EXPORT'  |
+| <l                     | '#+BEGIN_EXPORT latex' … '#+END_EXPORT' |
+| <q                     | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
+| <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
+| <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
+
+#+begin_src emacs-lisp 
+
+(require 'org-tempo)
+
+#+end_src
+
+
+** Which Key
+
+[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any key binding in Emacs to offer you all possible completions for the prefix.  For example, if you press =C-c= (hold control and press the letter =c=), a panel will appear at the bottom of the frame displaying all of the bindings under that prefix and which command they run.  This is very useful for learning the possible key bindings in the mode of your current buffer.
+
+#+begin_src emacs-lisp
+
+    (use-package which-key
+      :defer 0
+      :diminish which-key-mode
+      :config
+      (which-key-mode)
+      ;;(setq which-key-idle-delay 0.8)
+      ;;(setq which-key-separator " → "))
+
+      (setq which-key-side-window-location 'bottom
+  	  which-key-sort-order #'which-key-key-order-alpha
+  	  which-key-allow-imprecise-window-fit nil
+  	  which-key-sort-uppercase-first nil
+  	  which-key-add-column-padding 1
+  	  which-key-max-display-columns nil
+  	  which-key-min-display-lines 6
+  	  which-key-side-window-slot -10
+  	  which-key-side-window-max-height 0.25
+  	  which-key-idle-delay 0.8
+  	  which-key-max-description-length 25
+  	  which-key-allow-imprecise-window-fit nil
+  	  which-key-separator " → " ))
+
+#+end_src
+
+** Ivy and Counsel
+
+[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs.  It provides a minimal yet powerful selection menu that appears when you op
+en files, switch buffers, and for many other tasks in Emacs.  Counsel is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which
+ provide useful commands for each of the default completion commands.
+
+[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each item.
+
+#+begin_src emacs-lisp
+
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("TAB" . ivy-alt-done)
+           ("C-l" . ivy-alt-done)
+           ("C-j" . ivy-next-line)
+           ("C-k" . ivy-previous-line)
+           :map ivy-switch-buffer-map
+           ("C-k" . ivy-previous-line)
+           ("C-l" . ivy-done)
+           ("C-d" . ivy-switch-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line)
+           ("C-d" . ivy-reverse-i-search-kill))
+    :config
+    (ivy-mode 1))
+
+  (use-package ivy-rich
+    :after ivy
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package counsel
+    :bind (("C-M-j" . 'counsel-switch-buffer)
+           :map minibuffer-local-map
+           ("C-r" . 'counsel-minibuffer-history))
+    :custom
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+    :config
+    (counsel-mode 1))
+
+#+end_src
+
+*** Improved Candidate Sorting with prescient.el
+
+prescient.el provides some helpful behavior for sorting Ivy completion candidates based on how recently or frequently you select them.  This can be especially h
+elpful when using =M-x= to run commands that you don't have bound to a key but still need to access occasionally.
+
+#+begin_src emacs-lisp
+
+  (use-package ivy-prescient
+    :after counsel
+    :custom
+    (ivy-prescient-enable-filtering nil)
+    :config
+    ;; Uncomment the following line to have sorting remembered across sessions!
+    ;(prescient-persist-mode 1)
+    (ivy-prescient-mode 1))
+
+#+end_src
+
+* Org Mode
+
+#+begin_src emacs-lisp
+
+  (use-package org)
+  ;; Must do this so the agenda knows where to look for my files
+  (setq org-agenda-files '("~/Documents/org"))
+
+  ;; When a TODO is set to a done state, record a timestamp
+  (setq org-log-done 'time)
+
+  ;; Follow the links
+  (setq org-return-follows-link  t)
+
+  ;; Associate all org files with org mode
+  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+
+  ;; Make the indentation look nicer
+  (add-hook 'org-mode-hook 'org-indent-mode)
+
+  ;; Better looking bullets
+  (font-lock-add-keywords 'org-mode
+                          '(("^ +\\([-*]\\) "
+                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Remap the change priority keys to use the UP or DOWN key
+  (define-key org-mode-map (kbd "C-c <up>") 'org-priority-up)
+  (define-key org-mode-map (kbd "C-c <down>") 'org-priority-down)
+  
+  ;; Shortcuts for storing links, viewing the agenda, and starting a capture
+  (define-key global-map "\C-cl" 'org-store-link)
+  (define-key global-map "\C-ca" 'org-agenda)
+  (define-key global-map "\C-cc" 'org-capture)
+
+  ;; When you want to change the level of an org item, use SMR
+  (define-key org-mode-map (kbd "C-c C-g C-r") 'org-shiftmetaright)
+
+  ;; Hide the markers so you just see bold text as BOLD-TEXT and not *BOLD-TEXT*
+  (setq org-hide-emphasis-markers t)
+
+  ;; Wrap the lines in org mode so that things are easier to read
+  (add-hook 'org-mode-hook 'visual-line-mode)
+
+  ;; Set the org refile targets
+  (setq org-refile-targets
+      '(("archive.org" :maxlevel . 1)
+        ("tasks.org" :maxlevel . 3)))
+
+  ;; Save Org buffers after refiling!
+  (advice-add 'org-refile :after 'org-save-all-org-buffers)
+
+  ;; Set the Org ellipsis icon
+  (setq org-ellipsis " ▾")
+
+  (let* ((variable-tuple
+          (cond ((x-list-fonts "Cantarell")       '(:font "Cantarell"))
+                ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+                ((x-list-fonts "Verdana")         '(:font "Verdana"))
+                ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+                (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+         (base-font-color     (face-foreground 'default nil 'default))
+         ;;(headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+         (headline           `(:inherit default :foreground ,base-font-color)))
+
+    (custom-theme-set-faces
+     'user
+     `(org-level-8 ((t (,@headline ,@variable-tuple))))
+     `(org-level-7 ((t (,@headline ,@variable-tuple))))
+     `(org-level-6 ((t (,@headline ,@variable-tuple))))
+     `(org-level-5 ((t (,@headline ,@variable-tuple))))
+     `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+     `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.2))))
+     `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.3))))
+     `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.5))))
+     `(org-document-title ((t (,@headline ,@variable-tuple :height 1.5 :underline nil))))))
+
+  (setq org-capture-templates
+        '(    
+          ("l" "Log Entry (Work)"
+           entry (file+olp+datetree "~/Documents/org/work-log.org")
+           "* [%<%H:%M>] %? "
+           :empty-lines 0)
+
+          ("n" "Note"
+           ;;entry (file+headline "~/Documents/org/notes.org" "Random Notes")
+           entry (file+headline "~/Documents/org/inbox.org" "Notes")
+           "** %?"
+           :empty-lines 0)
+
+          ;;("g" "General To-Do"
+          ;; entry (file+headline "~/Documents/org/todos.org" "General Tasks")
+          ;; "* TODO [#B] %?\n:Created: %T\n "
+          ;; :empty-lines 0)
+
+          ("m" "Meeting"
+           entry (file+olp+datetree "~/Documents/org/meetings.org")
+           "* %? :meeting:%^g \n:Created: %T\n** Attendees\n*** \n** Notes\n*** \n** Action Items\n*** "
+           ;;:tree-type week
+           :clock-in t
+           :clock-resume t
+           :empty-lines 1)
+
+          ("t" "Task" entry
+          (file+headline "~/Documents/org/inbox.org" "Inbox")
+           "** TODO %?\n %U"
+           :empty-lines 0)
+
+          ))
+
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "PLANNING(p)" "IN-PROGRESS(i@/!)" "BLOCKED(b@)"  "|" "DONE(d!)" "CANCELLED(c@/!)" )
+          ))
+
+  (setq org-todo-keyword-faces
+        '(
+          ("TODO" . (:foreground "GoldenRod" :weight bold))
+          ("PLANNING" . (:foreground "DeepPink" :weight bold))
+          ("IN-PROGRESS" . (:foreground "Cyan" :weight bold))
+          ("VERIFYING" . (:foreground "DarkOrange" :weight bold))
+          ("BLOCKED" . (:foreground "Red" :weight bold))
+          ("DONE" . (:foreground "LimeGreen" :weight bold))
+          ("WONT-DO" . (:foreground "LimeGreen" :weight bold))
+          ))
+
+
+  ;; Tags
+  (setq org-tag-alist '(
+                        ;; Meeting types
+                        (:startgroup . nil)
+                        ("one_on_one" . ?g)
+                        (:endgroup . nil)
+
+                        ;; Meeting tags
+                        ("general" . ?l)
+                        ("meeting" . ?m)
+                        ("misc" . ?z)
+                        ("planning" . ?p)
+
+                        ;; Work Log Tags
+                        ("accomplishment" . ?a)
+                        ("research" . ?r)
+                        ))
+
+
+  ;; Tag colors
+  (setq org-tag-faces
+        '(
+          ("planning"  . (:foreground "mediumPurple1" :weight bold))
+          ("backend"   . (:foreground "royalblue1"    :weight bold))
+          ("frontend"  . (:foreground "forest green"  :weight bold))
+          ("QA"        . (:foreground "sienna"        :weight bold))
+          ("meeting"   . (:foreground "yellow1"       :weight bold))
+          ("CRITICAL"  . (:foreground "red1"          :weight bold))
+          )
+        )
+
+
+  ;; Agenda View "d"
+  (defun air-org-skip-subtree-if-priority (priority)
+    "Skip an agenda subtree if it has a priority of PRIORITY.
+
+      PRIORITY may be one of the characters ?A, ?B, or ?C."
+    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+          (pri-value (* 1000 (- org-lowest-priority priority)))
+          (pri-current (org-get-priority (thing-at-point 'line t))))
+      (if (= pri-value pri-current)
+          subtree-end
+        nil)))
+
+  (setq org-agenda-skip-deadline-if-done t)
+
+  (setq org-agenda-custom-commands
+        '(
+
+          ;; Daily Agenda & TODOs
+          ("d" "Daily agenda and all TODOs"
+
+           ;; Display items with priority A
+           ((tags "PRIORITY=\"A\""
+                  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                   (org-agenda-overriding-header "High-priority unfinished tasks:")))
+
+            ;; View 7 days in the calendar view
+            (agenda "" ((org-agenda-span 7)))
+
+            ;; Display items with priority B (really it is view all items minus A & C)
+            (alltodo ""
+                     ((org-agenda-skip-function '(or (air-org-skip-subtree-if-priority ?A)
+                                                     (air-org-skip-subtree-if-priority ?C)
+                                                     (org-agenda-skip-if nil '(scheduled deadline))))
+                      (org-agenda-overriding-header "ALL normal priority tasks:")))
+
+            ;; Display items with pirority C
+            (tags "PRIORITY=\"C\""
+                  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                   (org-agenda-overriding-header "Low-priority Unfinished tasks:")))
+            )
+
+           ;; Don't compress things (change to suite your tastes)
+           ((org-agenda-compact-blocks nil)))
+          
+          ;; Super View
+          ("j" "Super View"
+           (
+            (agenda ""
+                    (
+                     (org-agenda-remove-tags t)                                       
+                     (org-agenda-span 7)
+                     )
+                    )
+
+            (alltodo ""
+                     (
+                      ;; Remove tags to make the view cleaner
+                      (org-agenda-remove-tags t)
+                      (org-agenda-prefix-format "  %t  %s")                    
+                      (org-agenda-overriding-header "CURRENT STATUS")
+
+                      ;; Define the super agenda groups (sorts by order)
+                      (org-super-agenda-groups
+                       '(
+                         ;; Filter where tag is CRITICAL
+                         (:name "Critical Tasks"
+                                :tag "CRITICAL"
+                                :order 0
+                                )
+                         ;; Filter where TODO state is IN-PROGRESS
+                         (:name "Currently Working"
+                                :todo "IN-PROGRESS"
+                                :order 1
+                                )
+                         ;; Filter where TODO state is PLANNING
+                         (:name "Planning Next Steps"
+                                :todo "PLANNING"
+                                :order 2
+                                )
+                         ;; Filter where TODO state is BLOCKED or where the tag is obstacle
+                         (:name "Problems & Blockers"
+                                :todo "BLOCKED"
+                                :tag "obstacle"                              
+                                :order 3
+                                )
+                         ;; Filter where tag is @research
+                         (:name "Research Required"
+                                :tag "@research"
+                                :order 7
+                                )
+                         ;; Filter where tag is meeting and priority is A (only want TODOs from meetings)
+                         (:name "Meeting Action Items"
+                                :and (:tag "meeting" :priority "A")
+                                :order 8
+                                )
+                         ;; Filter where state is TODO and the priority is A and the tag is not meeting
+                         (:name "Other Important Items"
+                                :and (:todo "TODO" :priority "A" :not (:tag "meeting"))
+                                :order 9
+                                )
+                         ;; Filter where state is TODO and priority is B
+                         (:name "General Backlog"
+                                :and (:todo "TODO" :priority "B")
+                                :order 10
+                                )
+                         ;; Filter where the priority is C or less (supports future lower priorities)
+                         (:name "Non Critical"
+                                :priority<= "C"
+                                :order 11
+                                )
+                         ;; Filter where TODO state is VERIFYING
+                         (:name "Currently Being Verified"
+                                :todo "VERIFYING"
+                                :order 20
+                                )
+                         )
+                       )
+                      )
+                     )
+            ))
+          ))
+#+end_src
+
+** Nicer Heading Bullets
+
+[[https://github.com/sabof/org-bullets][org-bullets]] replaces the heading stars in =org-mode= buffers with nicer looking characters that you can control.
+
+#+begin_src emacs-lisp
+
+  (use-package org-bullets
+    :hook (org-mode . org-bullets-mode)
+    :custom
+    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+#+end_src
+
+** Table of Contents
+
+#+begin_src emacs-lisp
+
+  (use-package toc-org
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
+
+#+end_src
+
+** Configure Babel Languages
+
+To execute or export code in =org-mode= code blocks, you'll need to set up =org-babel-load-languages= for each language you'd like to use.  [[https://orgmode.or
+g/worg/org-contrib/babel/languages.html][This page]] documents all of the languages that you can use with =org-babel=.
+
+#+begin_src emacs-lisp
+
+  (with-eval-after-load 'org
+    (org-babel-do-load-languages
+        'org-babel-load-languages
+        '((emacs-lisp . t)
+          (shell . t)
+          (python . t)))
+
+    (push '("conf-unix" . conf-unix) org-src-lang-modes))
+
+#+end_src
+
+** Structure Templates
+
+Org Mode's [[https://orgmode.org/manual/Structure-Templates.html][structure templates]] feature enables you to quickly insert code blocks into your Org files in
+ combination with =org-tempo= by typing =<= followed by the template name like =el= or =py= and then press =TAB=.  For example, to insert an empty =emacs-lisp=
+block below, you can type =<el= and press =TAB= to expand into such a block.
+
+You can add more =src= block templates below by copying one of the lines and changing the two strings at the end, the first to be the template name and the seco
+nd to contain the name of the language [[https://orgmode.org/worg/org-contrib/babel/languages.html][as it is known by Org Babel]].
+
+#+begin_src emacs-lisp
+
+  (with-eval-after-load 'org
+    ;; This is needed as of Org 9.2
+    (require 'org-tempo)
+
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python")))
+
+#+end_src
+
+* Development
+
+** Languages
+** Rainbow Delimiters
+
+[[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] is useful in programming modes because it colorizes nested parentheses and brackets accordi
+ng to their nesting depth.  This makes it a lot easier to visually match parentheses in Emacs Lisp code without having to count them yourself.
+
+#+begin_src emacs-lisp
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+#+end_src
+
+* File Management
+
+** Dired
+
+#+begin_src emacs-lisp
+
+  (use-package dired
+    :ensure nil
+    :commands (dired dired-jump)
+    :bind (("C-x C-j" . dired-jump))
+    :custom ((dired-listing-switches "-agho --group-directories-first"))
+    :config
+    (evil-collection-define-key 'normal 'dired-mode-map
+      "h" 'dired-single-up-directory
+      "l" 'dired-single-buffer))
+
+  (use-package dired-single
+    :commands (dired dired-jump))
+
+  (use-package all-the-icons-dired
+    :hook (dired-mode . all-the-icons-dired-mode))
+
+  (use-package dired-open
+    :commands (dired dired-jump)
+    :config
+    ;; Doesn't work as expected!
+    ;;(add-to-list 'dired-open-functions #'dired-open-xdg t)
+    (setq dired-open-extensions '(("png" . "feh")
+                                  ("mkv" . "mpv"))))
+
+  (use-package dired-hide-dotfiles
+    :hook (dired-mode . dired-hide-dotfiles-mode)
+    :config
+    (evil-collection-define-key 'normal 'dired-mode-map
+      "H" 'dired-hide-dotfiles-mode))
+
+#+end_src
+
+** Sudo Edit
+
+#+begin_src emacs-lisp
+
+(use-package sudo-edit)
+
+#+end_src
+
+* Spell Check
+
+#+begin_src emacs-lisp
+
+;; Install Flycheck
+(use-package flycheck
+  :ensure t
+  :defer t
+  :diminish
+  :init (global-flycheck-mode))
+
+;; Enable Flyspell
+
+(dolist (hook '(text-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode 1))))
+
+(dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+  (add-hook hook (lambda () (flyspell-mode -1))))
+
+#+end_src
